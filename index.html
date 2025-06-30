@@ -9,24 +9,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Custom styles */
         body {
             font-family: 'Inter', sans-serif;
-            overflow: hidden; /* Hide scrollbars for the particle effect */
-            display: flex; /* Use flexbox for centering */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
-            min-height: 100vh; /* Full viewport height */
-            /* Background: Original pink/purple gradient */
-            background: linear-gradient(135deg, #a78bfa 0%, #fbcfe8 100%); /* Tailwind purple-300 to pink-200 equivalent */
-        }
-        .heart-icon { /* Original heart icon class */
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
-        }
-        .heart-icon:hover {
-            transform: scale(1.1);
-            filter: brightness(1.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #a78bfa 0%, #fbcfe8 100%);
         }
         .poem-container {
             max-height: 0;
@@ -35,20 +25,17 @@
             opacity: 0;
         }
         .poem-container.open {
-            max-height: 500px; /* Adjust based on poem length */
+            max-height: 800px;
             opacity: 1;
         }
-
-        /* Particle animation styles for continuous float */
         .particle {
             position: absolute;
-            background-color: rgba(255, 105, 180, 0.6); /* Pink hearts */
+            background-color: rgba(255, 105, 180, 0.6);
             border-radius: 50%;
             pointer-events: none;
             opacity: 0;
             will-change: transform, opacity;
         }
-
         @keyframes floatUp {
             0% {
                 transform: translateY(0) scale(0.5);
@@ -62,8 +49,6 @@
                 opacity: 0;
             }
         }
-
-        /* Particle animation styles for the grand entrance burst */
         @keyframes burstFloatUp {
             0% {
                 transform: translate(var(--initial-x), var(--initial-y)) scale(0.1);
@@ -78,81 +63,82 @@
                 opacity: 0;
             }
         }
-
-        /* Heart SVG animation - subtle pulse */
-        .heart-svg { /* Original heart SVG class */
+        .heart-svg {
             animation: pulse 2s infinite alternate;
         }
-
         @keyframes pulse {
             0% { transform: scale(1); opacity: 0.9; }
             100% { transform: scale(1.05); opacity: 1; }
         }
-
-        /* Card glow effect on hover */
         .card-glow:hover {
-            box-shadow: 0 0 40px rgba(255, 105, 180, 0.7); /* Pink glow */
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.7);
             border-color: rgba(255, 105, 180, 0.7);
+        }
+        /* Hide background icons on xs screens */
+        @media (max-width: 480px) {
+            .mobile-hide {
+                display: none !important;
+            }
         }
     </style>
 </head>
-<body>
+<body class="overflow-auto sm:overflow-hidden"> <!-- Allow vertical scroll on mobile -->
 
-    <!-- Main Dynamic Content Container (for Waiting Message & Riddles) -->
-    <div id="dynamicContentContainer" class="bg-white bg-opacity-90 rounded-3xl shadow-2xl p-8 md:p-12 w-full mx-4 text-center border border-purple-300 transform transition-all duration-500 ease-in-out max-w-xl">
-        <!-- Content will be dynamically inserted here by JavaScript -->
+    <!-- Dynamic Content Container -->
+    <div id="dynamicContentContainer"
+        class="relative bg-white bg-opacity-90 rounded-2xl shadow-xl p-4 sm:p-8 md:p-12 w-full mx-2 sm:mx-4 text-center border border-purple-300 transform transition-all duration-500 ease-in-out max-w-xs sm:max-w-lg md:max-w-xl">
+
     </div>
 
-    <!-- Main Card Container - Hidden initially, then revealed -->
-    <div id="mainCardContainer" class="bg-white bg-opacity-80 rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full mx-4 text-center overflow-hidden border border-pink-300 transform transition-all duration-500 ease-in-out scale-0 opacity-0 hidden card-glow">
+    <!-- Main Card Container -->
+    <div id="mainCardContainer"
+        class="relative bg-white bg-opacity-80 rounded-2xl shadow-xl p-4 sm:p-8 md:p-12 max-w-xs sm:max-w-lg md:max-w-2xl w-full mx-2 sm:mx-4 text-center overflow-hidden border border-pink-300 transform transition-all duration-500 ease-in-out scale-0 opacity-0 hidden card-glow">
 
-        <!-- Background Floating Elements (Original theme: general sparkle/hearts) -->
-        <div class="absolute top-4 left-4 text-purple-400 text-5xl opacity-30 animate-pulse">✨</div>
-        <div class="absolute bottom-4 right-4 text-pink-400 text-5xl opacity-30 animate-bounce">💖</div>
+        <!-- Background Floating Elements -->
+        <div class="absolute top-2 left-2 text-purple-400 text-3xl sm:text-5xl opacity-30 animate-pulse mobile-hide">✨</div>
+        <div class="absolute bottom-2 right-2 text-pink-400 text-3xl sm:text-5xl opacity-30 animate-bounce mobile-hide">💖</div>
 
-        <h1 class="text-4xl md:text-5xl font-extrabold text-pink-600 mb-6 drop-shadow-lg leading-tight">
+        <h1 class="text-2xl sm:text-3xl md:text-5xl font-extrabold text-pink-600 mb-4 sm:mb-6 drop-shadow-lg leading-tight">
             The Start of Forever
         </h1>
 
-        <!-- The new quote placement -->
-        <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-prose mx-auto italic font-semibold">
+        <p class="text-base sm:text-lg md:text-xl text-gray-600 mb-6 sm:mb-8 max-w-prose mx-auto italic font-semibold">
             "Grow old along with me; the best is yet to be."
         </p>
 
-        <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-prose mx-auto">
-            Dearest love, this card is filled with the joy you've woven into my life, a quiet tribute to the love that continually brightens my world.
+        <p class="text-base sm:text-lg md:text-xl text-gray-700 mb-6 sm:mb-8 max-w-prose mx-auto">
+            These words are a quiet tribute to the joy and love you’ve woven into my life—a simple reminder of how much you mean to me..
         </p>
 
         <!-- Interactive Heart Icon -->
-        <div id="heartIcon" class="heart-icon inline-block mb-8 transition-transform duration-300 ease-out hover:rotate-3">
-            <svg class="heart-svg w-24 h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+        <div id="heartIcon" class="heart-icon inline-block mb-6 sm:mb-8 transition-transform duration-300 ease-out hover:rotate-3">
+            <svg class="heart-svg w-16 h-16 sm:w-24 sm:h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 21.35l-1.84-1.66C4.48 14.74 1 11.99 1 8.5 1 5.42 3.42 3 6.5 3c1.74 0 3.41.81 4.5 2.09C12.09 3.81 13.76 3 15.5 3 18.58 3 21 5.42 21 8.5c0 3.49-3.48 6.24-9.16 11.19L12 21.35z"/>
             </svg>
         </div>
 
-
         <!-- Poem Container -->
-        <div id="poemContainer" class="poem-container text-gray-800 transition-all duration-700 ease-in-out text-lg leading-relaxed">
-            <p class="mb-4 italic">
-                Bass drops low, my heartbeat speeds,<br>
-                You glitch my code with playful deeds.<br>
-                From concert halls to game controls,<br>
-                You’re the player who steals my soul.
+        <div id="poemContainer" class="poem-container text-gray-800 transition-all duration-700 ease-in-out text-base sm:text-lg leading-relaxed">
+            <p class="mb-2 sm:mb-4 italic">
+                No firework moments, nothing staged,<br>
+                Just hearts that learnt to be engaged..<br>
+                In every message, every sound,<br>
+                A piece of you I somehow found.
             </p>
-            <p class="mb-4 italic">
-                Now Brahms plays soft while dinners steam,<br>
-                You win again in pixel dreams.<br>
-                A symphony, a player two,<br>
-                In every note, I find more you.
+            <p class="mb-2 sm:mb-4 italic">
+                Side by side, the notes unfold<br>
+                Shared adventures, futures bold.<br>
+                No epic spark, no shooting star<br>
+                Just quiet trust in who we are.
             </p>
-            <p class="mb-4 italic">
+            <p class="mb-2 sm:mb-4 italic">
                 No fireworks marked our first hello,<br>
                 Just woven fate and gentle flow.<br>
-                Two names aligned by choice above--<br>
+                Two names aligned by choice above-<br>
                 In time, through grace, we grew to love.
             </p>
-            <p class="font-semibold text-pink-700 mt-6 text-xl">
-                Yours Forever,<br>Guru Prasad
+            <p class="font-semibold text-pink-700 mt-4 sm:mt-6 text-lg sm:text-xl">
+                With all the words I never sent,<br> Guru
             </p>
         </div>
     </div>
@@ -197,7 +183,16 @@
                     What type of place began our sweetest dream?
                 `,
                 hint: "Where did we first meet, just the two of us?",
-                correctAnswers: ['italian restaurant', 'restaurant', 'italian place', 'italian eatery', 'pizza place', 'eat italiano']
+                correctAnswers: ['italian restaurant', 'restaurant', 'italian place', 'italian', 'bruschetta', 'eat italiano']
+            },
+            {
+                riddle: `
+                    Each day begins with these simple words,<br>
+                    Sent before the world can be heard.<br>
+                    What do we always say to start our day?
+                `,
+                hint: "First message every day",
+                correctAnswers: ['good morning']
             }
         ];
 
@@ -235,13 +230,13 @@
                 <p class="text-lg text-gray-700 mb-6">
                     ${riddleData.riddle}
                 </p>
-                <div class="flex items-center justify-center mb-4">
+                <div class="flex flex-col sm:flex-row items-center justify-center mb-4 space-y-2 sm:space-y-0 sm:space-x-2">
                     <input
                         type="text"
                         id="riddleAnswerInput${stepNumber}"
-                        class="p-3 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-700 bg-pink-50 shadow-sm transition-all duration-200 ease-in-out w-full md:w-3/4"
+                        class="p-3 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-700 bg-pink-50 shadow-sm transition-all duration-200 ease-in-out w-full"
                     />
-                    <button id="hintButton${stepNumber}" class="ml-2 px-3 py-2 bg-purple-200 text-purple-800 rounded-lg text-sm hover:bg-purple-300 transition-colors duration-200">
+                    <button id="hintButton${stepNumber}" class="sm:ml-2 px-3 py-2 bg-purple-200 text-purple-800 rounded-lg text-sm hover:bg-purple-300 transition-colors duration-200">
                         Hint
                     </button>
                 </div>
