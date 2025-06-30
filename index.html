@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greetings</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Hide scrollbars for the particle effect */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
+            min-height: 100vh; /* Full viewport height */
+            /* Background: Original pink/purple gradient */
+            background: linear-gradient(135deg, #a78bfa 0%, #fbcfe8 100%); /* Tailwind purple-300 to pink-200 equivalent */
+        }
+        .heart-icon { /* Original heart icon class */
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+        .heart-icon:hover {
+            transform: scale(1.1);
+            filter: brightness(1.2);
+        }
+        .poem-container {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, opacity 0.7s ease-in-out;
+            opacity: 0;
+        }
+        .poem-container.open {
+            max-height: 500px; /* Adjust based on poem length */
+            opacity: 1;
+        }
+
+        /* Particle animation styles for continuous float */
+        .particle {
+            position: absolute;
+            background-color: rgba(255, 105, 180, 0.6); /* Pink hearts */
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            will-change: transform, opacity;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-500px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Particle animation styles for the grand entrance burst */
+        @keyframes burstFloatUp {
+            0% {
+                transform: translate(var(--initial-x), var(--initial-y)) scale(0.1);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translate(var(--initial-x), var(--initial-y)) scale(0.8);
+            }
+            100% {
+                transform: translate(var(--initial-x), var(--target-y)) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        /* Heart SVG animation - subtle pulse */
+        .heart-svg { /* Original heart SVG class */
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        /* Card glow effect on hover */
+        .card-glow:hover {
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.7); /* Pink glow */
+            border-color: rgba(255, 105, 180, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Dynamic Content Container (for Waiting Message & Riddles) -->
+    <div id="dynamicContentContainer" class="bg-white bg-opacity-90 rounded-3xl shadow-2xl p-8 md:p-12 w-full mx-4 text-center border border-purple-300 transform transition-all duration-500 ease-in-out max-w-xl">
+        <!-- Content will be dynamically inserted here by JavaScript -->
+    </div>
+
+    <!-- Main Card Container - Hidden initially, then revealed -->
+    <div id="mainCardContainer" class="bg-white bg-opacity-80 rounded-3xl shadow-2xl p-8 md:p-12 max-w-2xl w-full mx-4 text-center overflow-hidden border border-pink-300 transform transition-all duration-500 ease-in-out scale-0 opacity-0 hidden card-glow">
+
+        <!-- Background Floating Elements (Original theme: general sparkle/hearts) -->
+        <div class="absolute top-4 left-4 text-purple-400 text-5xl opacity-30 animate-pulse">✨</div>
+        <div class="absolute bottom-4 right-4 text-pink-400 text-5xl opacity-30 animate-bounce">💖</div>
+
+        <h1 class="text-4xl md:text-5xl font-extrabold text-pink-600 mb-6 drop-shadow-lg leading-tight">
+            The Start of Forever
+        </h1>
+
+        <!-- The new quote placement -->
+        <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-prose mx-auto italic font-semibold">
+            "Grow old along with me; the best is yet to be."
+        </p>
+
+        <p class="text-lg md:text-xl text-gray-700 mb-8 max-w-prose mx-auto">
+            Dearest love, this card is filled with the joy you've woven into my life, a quiet tribute to the love that continually brightens my world.
+        </p>
+
+        <!-- Interactive Heart Icon -->
+        <div id="heartIcon" class="heart-icon inline-block mb-8 transition-transform duration-300 ease-out hover:rotate-3">
+            <svg class="heart-svg w-24 h-24 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.84-1.66C4.48 14.74 1 11.99 1 8.5 1 5.42 3.42 3 6.5 3c1.74 0 3.41.81 4.5 2.09C12.09 3.81 13.76 3 15.5 3 18.58 3 21 5.42 21 8.5c0 3.49-3.48 6.24-9.16 11.19L12 21.35z"/>
+            </svg>
+        </div>
+
+
+        <!-- Poem Container -->
+        <div id="poemContainer" class="poem-container text-gray-800 transition-all duration-700 ease-in-out text-lg leading-relaxed">
+            <p class="mb-4 italic">
+                Bass drops low, my heartbeat speeds,<br>
+                You glitch my code with playful deeds.<br>
+                From concert halls to game controls,<br>
+                You’re the player who steals my soul.
+            </p>
+            <p class="mb-4 italic">
+                Now Brahms plays soft while dinners steam,<br>
+                You win again in pixel dreams.<br>
+                A symphony, a player two,<br>
+                In every note, I find more you.
+            </p>
+            <p class="mb-4 italic">
+                No fireworks marked our first hello,<br>
+                Just woven fate and gentle flow.<br>
+                Two names aligned by choice above--<br>
+                In time, through grace, we grew to love.
+            </p>
+            <p class="font-semibold text-pink-700 mt-6 text-xl">
+                Yours Forever,<br>Guru Prasad
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const heartIcon = document.getElementById('heartIcon');
+        const poemContainer = document.getElementById('poemContainer');
+        const dynamicContentContainer = document.getElementById('dynamicContentContainer'); // New main container
+        const mainCardContainer = document.getElementById('mainCardContainer');
+
+        let poemRevealed = false;
+        let countdownInterval;
+
+        // --- Target Date and Time for Reveal (Adjust this!) ---
+        // IMPORTANT: Set this to a date/time in the past if you want to test the riddle/card immediately.
+        // Example for immediate display: const TARGET_DATE = new Date('2020-01-01T00:00:00');
+        const TARGET_DATE = new Date('2025-07-04T22:00:00');
+
+
+        // --- Riddle Data ---
+        let currentRiddleStep = 0; // 0 for waiting, 1-3 for riddles
+        const RIDDLE_STEPS = [
+            null, // Index 0 is not used for a riddle step
+            {
+                riddle: `
+                    I mark the mid-year point, a sunlit, joyful space,<br>
+                    A number of fingers, setting our love's first pace.<br>
+                    This day and month together, a memory so clear,<br>
+                    When our hearts first knew, forever was near.
+                `,
+                hint: "When did we first meet in person?",
+                correctAnswers: [
+                    'june 5', 'jun 5', '5 june', '5 jun', 'june fifth', '5th june',
+                    'june the 5th', '5 of june', 'fifth of june'
+                ]
+            },
+            {
+                riddle: `
+                    Where flavors danced and laughter softly played,<br>
+                    A taste of the Mediterranean, beautifully arrayed.<br>
+                    Our first shared meal, beneath a friendly gleam,<br>
+                    What type of place began our sweetest dream?
+                `,
+                hint: "Where did we first meet, just the two of us?",
+                correctAnswers: ['italian restaurant', 'restaurant', 'italian place', 'italian eatery', 'pizza place', 'eat italiano']
+            }
+        ];
+
+
+        // --- Render Functions ---
+        function renderWaitingMessage() {
+            dynamicContentContainer.innerHTML = `
+                <h2 class="text-3xl md:text-4xl font-extrabold text-pink-700 mb-6 drop-shadow-lg leading-tight">
+                    Something Special Awaits... ❤️
+                </h2>
+                <p class="text-lg text-gray-700 mb-6">
+                    Our cherished memory is just a moment away. Please return at the designated time to unlock its secrets.
+                    Anticipation makes the heart grow fonder!
+                </p>
+                <p id="countdownDisplay" class="text-xl font-bold text-purple-600 mt-4"></p>
+            `;
+            const countdownDisplay = document.getElementById('countdownDisplay');
+            updateCountdown(countdownDisplay); // Call once immediately
+            countdownInterval = setInterval(() => updateCountdown(countdownDisplay), 1000);
+        }
+
+        function renderRiddleStep(stepNumber) {
+            currentRiddleStep = stepNumber;
+            const riddleData = RIDDLE_STEPS[stepNumber];
+
+            if (!riddleData) {
+                console.error("Invalid riddle step:", stepNumber);
+                return;
+            }
+
+            dynamicContentContainer.innerHTML = `
+                <h2 class="text-3xl md:text-4xl font-extrabold text-purple-700 mb-6 drop-shadow-lg leading-tight">
+                    A Special Memory Awaits...
+                </h2>
+                <p class="text-lg text-gray-700 mb-6">
+                    ${riddleData.riddle}
+                </p>
+                <div class="flex items-center justify-center mb-4">
+                    <input
+                        type="text"
+                        id="riddleAnswerInput${stepNumber}"
+                        class="p-3 rounded-xl border border-pink-300 focus:outline-none focus:ring-2 focus:ring-pink-400 text-gray-700 bg-pink-50 shadow-sm transition-all duration-200 ease-in-out w-full md:w-3/4"
+                    />
+                    <button id="hintButton${stepNumber}" class="ml-2 px-3 py-2 bg-purple-200 text-purple-800 rounded-lg text-sm hover:bg-purple-300 transition-colors duration-200">
+                        Hint
+                    </button>
+                </div>
+                <p id="hintText${stepNumber}" class="text-sm text-gray-600 mt-2 mb-4 hidden">Hint: ${riddleData.hint}</p>
+                <button
+                    id="submitRiddleButton${stepNumber}"
+                    class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1"
+                >
+                    ${stepNumber === RIDDLE_STEPS.length -1 ? 'Unveil the Card' : 'Next Clue'}
+                </button>
+                <p id="quizErrorMessage${stepNumber}" class="text-red-500 mt-4 text-sm hidden">
+                    Oops! That's not quite right. Try again!
+                </p>
+            `;
+
+            // Attach event listeners for the current step's elements
+            const currentInput = document.getElementById(`riddleAnswerInput${stepNumber}`);
+            const currentSubmitButton = document.getElementById(`submitRiddleButton${stepNumber}`);
+            const currentHintButton = document.getElementById(`hintButton${stepNumber}`);
+            const currentHintText = document.getElementById(`hintText${stepNumber}`);
+            const currentErrorMessage = document.getElementById(`quizErrorMessage${stepNumber}`);
+
+
+            currentSubmitButton.addEventListener('click', () => {
+                const enteredAnswer = currentInput.value.trim().toLowerCase();
+                if (riddleData.correctAnswers.includes(enteredAnswer)) {
+                    currentHintText.classList.add('hidden'); // Hide hint
+                    currentErrorMessage.classList.add('hidden'); // Hide error
+
+                    if (stepNumber === RIDDLE_STEPS.length - 1) { // Last step
+                        revealMainCard();
+                    } else {
+                        renderRiddleStep(stepNumber + 1); // Go to next step
+                    }
+                } else {
+                    currentErrorMessage.classList.remove('hidden');
+                }
+            });
+
+            currentHintButton.addEventListener('click', () => {
+                currentHintText.classList.toggle('hidden');
+            });
+        }
+
+        function revealMainCard() {
+            dynamicContentContainer.classList.add('hidden'); // Hide the riddle/waiting container
+            mainCardContainer.classList.remove('hidden'); // Make the main card visible
+            // Now apply transition classes after it's visible for smooth animation
+            setTimeout(() => {
+                mainCardContainer.classList.remove('scale-0', 'opacity-0');
+                mainCardContainer.classList.add('scale-100', 'opacity-100');
+            }, 10); // Small delay to ensure 'hidden' is removed before transition classes are applied
+
+            // Trigger a burst of particles from the center of the screen
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            for (let i = 0; i < 60; i++) {
+                createParticle(centerX, centerY, 'burstFloatUp');
+            }
+        }
+
+
+        // --- Particle Animation Functions ---
+        function createParticle(x, y, animationName = 'floatUp') {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            const size = Math.random() * 15 + 10;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+            particle.style.animationDelay = `${Math.random() * 0.5}s`;
+
+            if (animationName === 'burstFloatUp') {
+                const offsetX = (Math.random() - 0.5) * window.innerWidth * 0.4;
+                const offsetY = (Math.random() - 0.5) * window.innerHeight * 0.4;
+                particle.style.setProperty('--initial-x', `${offsetX}px`);
+                particle.style.setProperty('--initial-y', `${offsetY}px`);
+                particle.style.setProperty('--target-y', `${-window.innerHeight * 0.7}px`);
+            } else {
+                particle.style.setProperty('--initial-x', '0px');
+                particle.style.setProperty('--initial-y', '0px');
+                particle.style.setProperty('--target-y', `-500px`);
+            }
+
+            particle.style.animationName = animationName;
+            document.body.appendChild(particle);
+
+            // Remove particle after animation ends
+            particle.addEventListener('animationend', () => {
+                particle.remove();
+            });
+        }
+
+        // Click event for the heart icon on the main card
+        heartIcon.addEventListener('click', () => {
+            if (!poemRevealed) {
+                poemContainer.classList.add('open');
+                poemRevealed = true;
+
+                // Burst of particles from the heart icon's position
+                const rect = heartIcon.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                for (let i = 0; i < 30; i++) {
+                    createParticle(centerX, centerY, 'floatUp');
+                }
+
+            }
+        });
+
+        // Continuous subtle particle generation
+        setInterval(() => {
+            if (!mainCardContainer.classList.contains('scale-0') && document.body.getBoundingClientRect().height > 0) {
+                const x = Math.random() * window.innerWidth;
+                const y = window.innerHeight;
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 10 + 5;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                particle.style.animationDuration = `${Math.random() * 8 + 6}s`;
+                particle.style.opacity = Math.random() * 0.4 + 0.1;
+                particle.style.backgroundColor = `rgba(255, 105, 180, ${Math.random() * 0.4 + 0.2})`; // Varying pink/red for particles
+                particle.style.animationName = 'floatUp';
+                document.body.appendChild(particle);
+
+                // Remove particle after animation ends
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+        }, 300);
+
+        // --- Time-based Content Display Logic ---
+        function updateCountdown(countdownElement) {
+            const now = new Date();
+            const timeDifference = TARGET_DATE - now;
+
+            if (timeDifference <= 0) {
+                clearInterval(countdownInterval); // Stop the countdown
+                renderRiddleStep(1); // Start the first riddle
+            } else {
+                const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+                countdownElement.textContent = `Unlocking in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+        }
+
+        // Initial setup based on time
+        if (new Date() < TARGET_DATE) {
+            renderWaitingMessage();
+            mainCardContainer.classList.add('hidden'); // Ensure main card is hidden initially
+        } else {
+            renderRiddleStep(1); // Go straight to the first riddle
+            mainCardContainer.classList.add('hidden'); // Ensure main card is hidden initially
+        }
+
+    </script>
+</body>
+</html>
